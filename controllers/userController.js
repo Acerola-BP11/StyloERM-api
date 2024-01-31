@@ -28,8 +28,7 @@ const login = async (req, res) => {
         const expiresAt = new Date(+now + 24 * 1000 * 60 * 60)
         const session = { email: userData.email, username: userData.username, token: sessionToken, expiresAt: expiresAt }
         await Session.create(session)
-        res.status(200).cookie("Session", { sessionToken: sessionToken, username: userData.username }, { sameSite: 'None', secure: true },
-            { expiresAt: expiresAt }).send(`Bem vindo ${userData.username}`)
+        res.status(200).json( { sessionToken: sessionToken, username: userData.username } )
     } else {
         res.status(401).send()
     }
