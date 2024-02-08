@@ -70,7 +70,7 @@ const getClient = async (req, res) => {
 }
 
 const getClients = async (_, res) => {
-    const clients = (await ClientCNPJ.find()) + (await ClientPhysical.find())
+    const clients = (await ClientCNPJ.find()).concat((await ClientPhysical.find()))
     res.status(200).send(clients)
 }
 
@@ -118,22 +118,48 @@ const updateClientPhysical = async (req, res) => {
 
 const deleteClient = async (req, res) => {
 
-    const cnpj_cpf = req.params.clientId;
+    const cnpj_cpf_list = req.body.ids;
 
     try {
-        const client = await ClientCNPJ.findOne({ cnpj: cnpj_cpf }) || await ClientPhysical.findOne({ cpf: cnpj_cpf })
-        if (client) {
-            await client.deleteOne();
-            return res.status(200).send('Cliente excluído com sucesso.');
+        const deleteResultPhysicals = await ClientPhysical.deleteMany({ cpf: { $in: cnpj_cpf_list } });
+        const deleteResultCNPJs = await ClientCNPJ.deleteMany({ cnpj: { $in: cnpj_cpf_list } });
+
+        const totalDeleted = deleteResultPhysicals.deletedCount + deleteResultCNPJs.deletedCount;
+
+        if (totalDeleted > 0) {
+            return res.status(200).send(`Foram excluídos ${totalDeleted} cliente(s) com sucesso.`);
         } else {
-            return res.status(404).send('Cliente não encontrado.');
+            return res.status(404).send('Clientes não encontrados para exclusão.');
         }
     } catch (error) {
-        return res.status(500).send('Erro interno ao excluir cliente.');
+        console.error(error);
+        return res.status(500).send('Erro interno ao excluir clientes.');
     }
+}
+
+const autoFillClients = async (req, res) => {
+
+    try {
+        const clients = (await ClientCNPJ.find()).concat((await ClientPhysical.find()))
+        const clientData = clients.map(client => {
+            return {
+                clientId: client._id,
+                razao_nome: client.nome || client.razao,
+                cnpj_cpf: client.cpf || client.cnpj,
+                endereco: client.endereco + ' ' + client.numero,
+                cidade: client.cidade
+            }
+        })
+        console.log(clientData)
+        res.status(200).send(clientData)
+    } catch (e) {
+        console.error(e)
+        res.status(500).send('Erro ao preencher cliente!')
+    }
+
 }
 
 
 module.exports = {
-    createClientCNPJ, getClients, createClientPhysical, getClient, updateClientCNPJ, updateClientPhysical, deleteClient
+    createClientCNPJ, getClients, createClientPhysical, getClient, updateClientCNPJ, updateClientPhysical, deleteClient, autoFillClients
 }

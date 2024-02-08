@@ -35,21 +35,14 @@ const login = async (req, res) => {
 }
 
 const logout = async (req, res) => {
-    if (!req.cookies.Session) {
-        res.status(401).end()
-        return
-    }
-
-    const sessionToken = req.cookies.Session.sessionToken
+    const sessionToken = req.headers['authorization']
     if (!sessionToken) {
-        res.status(401).end()
+        res.status(400).end()
         return
     }
     await Session.deleteMany({ token: sessionToken })
         .catch(e => console.log('Error'))
-
-    res.cookie("Session", "", { expires: new Date() })
-    res.end()
+    res.status(200).end()
 }
 
 const validateEmail = async (req, res) => {

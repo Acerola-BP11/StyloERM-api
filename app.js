@@ -8,6 +8,7 @@ require('./utils/database')
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var clientsRouter = require('./routes/client')
+var orderRouter = require('./routes/order')
 
 var app = express();
 
@@ -21,5 +22,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
 app.use('/clients', clientsRouter)
+app.use('/orders', orderRouter)
 
 module.exports = app;
