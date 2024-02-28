@@ -33,6 +33,7 @@ const getOrders = async (_, res) => {
             {
                 $project: {
                     _id: 1,
+                    orderId: 1,
                     city: 1,
                     adress: 1, 
                     itens: 1, 
@@ -57,7 +58,7 @@ const getOrders = async (_, res) => {
 const getOrder = async (req, res) => {
     const orderId = req.params.orderId
 
-    const order = await Order.findById(orderId)
+    const order = await Order.findOne({orderId})
         .catch(e => {
             console.error(e)
             res.status(500).send("Erro ao buscar Pedido")
@@ -84,7 +85,7 @@ const updateOrder = async (req, res) => {
     const orderId = req.params.orderId
     const { city, adress, itens, budget, step } = req.body
 
-    const order = await Order.findByIdAndUpdate(orderId, { city, adress, itens, budget, step })
+    await Order.findByIdAndUpdate({orderId}, { city, adress, itens, budget, step })
         .catch(e => {
             console.error(e)
             res.status(500).send('Erro ao atualizar Pedido')
@@ -95,10 +96,10 @@ const updateOrder = async (req, res) => {
 }
 
 const cancelOrder = async (req, res) => {
-    const orderId = req.params.orderId
-    const canceled = req.body.canceled
+    const orderId = req.body.ids
+    const canceled = true
 
-    Order.findByIdAndUpdate(orderId, { canceled })
+    Order.updateMany({orderId: {$in: orderId}}, { canceled })
         .catch(e => {
             console.error(e)
             res.status(500).send('Erro ao alterar o status de cancelamento do Pedido')

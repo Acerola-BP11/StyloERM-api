@@ -159,7 +159,18 @@ const autoFillClients = async (req, res) => {
 
 }
 
+    const getClientById = async(req, res) =>{
+        const clientId = req.params.id
+        try {
+            const client = await ClientCNPJ.findById(clientId) || await ClientPhysical.findById(clientId)
+            res.status(200).send(client)
+        } catch (error) {
+            console.error(error)
+            res.status(500).send('Ocorreu um erro ao buscar as informações do cliente!')
+        }
+    }
+
 
 module.exports = {
-    createClientCNPJ, getClients, createClientPhysical, getClient, updateClientCNPJ, updateClientPhysical, deleteClient, autoFillClients
+    createClientCNPJ, getClients, createClientPhysical, getClient, updateClientCNPJ, updateClientPhysical, deleteClient, autoFillClients, getClientById
 }

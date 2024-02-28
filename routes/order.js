@@ -7,6 +7,6 @@ router.get('/:orderId', getOrder)
 router.get('/history/:clientId', getClientHistory)
 router.post('/', newOrder)
 router.patch('/:orderId', updateOrder)
-router.patch('/cancel/:orderId', cancelOrder)
+router.delete('/cancel', cancelOrder)
 
 module.exports = router

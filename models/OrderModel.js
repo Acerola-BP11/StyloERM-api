@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Counter = require('./CounterCollection')
 
 const stepSchema = new mongoose.Schema({
     step: String,
@@ -14,6 +15,7 @@ const itemSchema = new mongoose.Schema({
     material: String,
     color: String,
     pattern: String,
+    size: String,
     patternCode: String,
     finishing: String,
     unitaryPrice: Number,
@@ -21,6 +23,11 @@ const itemSchema = new mongoose.Schema({
 })
 
 const orderSchema = new mongoose.Schema({
+    orderId: {
+        type: Number,
+        index: true,
+        unique: true
+    },
     client: {
         type: mongoose.SchemaTypes.ObjectId,
         required: true
@@ -36,6 +43,13 @@ const orderSchema = new mongoose.Schema({
     },
     delivered: Boolean,
     canceled: Boolean
+})
+
+orderSchema.pre('save', async function() {
+    const orderId = await Counter.getNextValue()
+    console.log(orderId)
+    this.set({ orderId })
+    return
 })
 
 const Order = mongoose.model('Order', orderSchema)
