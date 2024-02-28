@@ -15,7 +15,7 @@ const createUser = async (req, res) => {
     }
     const user = await TempUser.create({ email: email, username: username })
     await sendMail(username, email, user._id)
-    res.status(200).json({ msg: 'Úsuario criado com sucesso!' })
+    res.status(200).send('Úsuario criado com sucesso!')
 }
 
 const login = async (req, res) => {
