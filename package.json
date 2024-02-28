@@ -2,7 +2,7 @@
   "name": "styloerm",
   "version": "0.0.0",
   "private": true,
-  "main": "./bin/www",
+  "main": "./app.js",
   "scripts": {
     "start": "node ./app.js"
   },
