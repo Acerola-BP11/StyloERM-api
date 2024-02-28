@@ -24,4 +24,8 @@ app.use('/user', usersRouter);
 app.use('/clients', clientsRouter)
 app.use('/orders', orderRouter)
 
+const port = process.env.PORT || '8080'
+
+app.listen(port, () => console.log(`Servidor rodando na porta ${port}`))
+
 module.exports = app;
