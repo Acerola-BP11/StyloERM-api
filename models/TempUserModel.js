@@ -11,10 +11,6 @@ const tempUserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    password: {
-       type: String,
-       required: true
-    },
     expiresAt: {
         type: Date,
         default: new Date() + 3600000

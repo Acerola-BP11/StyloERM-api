@@ -5,7 +5,7 @@ const TempUser = require('../models/TempUserModel')
 const sendMail = require('../utils/mail')
 
 const createUser = async (req, res) => {
-    const { email, username, password } = req.body
+    const { email, username } = req.body
     if (await User.findOne({ email })) {
         res.status(200).send('Este e-mail já está cadastrado')
         return
@@ -13,7 +13,7 @@ const createUser = async (req, res) => {
     if (await TempUser.findOne({ email })) {
         TempUser.deleteMany({ email })
     }
-    const user = await TempUser.create({ email: email, username: username, password: password })
+    const user = await TempUser.create({ email: email, username: username })
     await sendMail(username, email, user._id)
     res.status(200).json({ msg: 'Úsuario criado com sucesso!' })
 }
@@ -49,6 +49,7 @@ const validateEmail = async (req, res) => {
 
     try {
         const tempUserId = req.params.tempUserId
+        const password = req.body.password
         const tempUser = await TempUser.findById(tempUserId)
         console.log(tempUserId, tempUser)
         if (!tempUser) {
@@ -56,7 +57,7 @@ const validateEmail = async (req, res) => {
             return
         }
 
-        const { email, username, password, expiresAt } = tempUser
+        const { email, username, expiresAt } = tempUser
 
         if (expiresAt > new Date()) {
             await TempUser.deleteOne({ _id: tempUserId })
