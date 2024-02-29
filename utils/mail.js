@@ -32,7 +32,7 @@ async function sendMail(username, userEmail, tempUserId) {
       </div>`,
     attachments: [{
         filename: 'logo-no-background.png',
-        path: './logo-no-background.png',
+        path: './',
         cid: 'logo@nobackground'
     }]
 
