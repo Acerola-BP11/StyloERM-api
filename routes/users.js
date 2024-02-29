@@ -5,6 +5,6 @@ const userController = require('../controllers/userController')
 router.post('/', userController.createUser);
 router.post('/login', userController.login)
 router.get('/logout', userController.logout)
-router.post('/confirmRegistration/:tempUserId', userController.validateEmail)
+router.get('/confirmRegistration/:tempUserId', userController.validateEmail)
 
 module.exports = router;

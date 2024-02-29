@@ -49,15 +49,13 @@ const validateEmail = async (req, res) => {
 
     try {
         const tempUserId = req.params.tempUserId
-        const password = req.body.password
         const tempUser = await TempUser.findById(tempUserId)
-        console.log(tempUserId, tempUser)
         if (!tempUser) {
             res.status(404).send('Ocorreu um erro com a requisição!')
             return
         }
 
-        const { email, username, expiresAt } = tempUser
+        const { email, username, password, expiresAt } = tempUser
 
         if (expiresAt > new Date()) {
             await TempUser.deleteOne({ _id: tempUserId })
