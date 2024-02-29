@@ -11,7 +11,7 @@ const createUser = async (req, res) => {
         return
     }
     if (await TempUser.findOne({ email })) {
-        TempUser.deleteMany({ email })
+        await TempUser.deleteMany({ email })
     }
     const user = await TempUser.create({ email: email, username: username })
     await sendMail(username, email, user._id)
