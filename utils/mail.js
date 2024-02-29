@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const path = require('path');
 
 const transporter = nodemailer.createTransport({
     service: 'outlook',
@@ -32,7 +33,7 @@ async function sendMail(username, userEmail, tempUserId) {
       </div>`,
     attachments: [{
         filename: 'logo-no-background.png',
-        path: './',
+        path: path.join(__dirname, 'logo-no-background.png'),
         cid: 'logo@nobackground'
     }]
 
