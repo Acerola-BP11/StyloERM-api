@@ -118,7 +118,7 @@ const updateClientPhysical = async (req, res) => {
 
 const deleteClient = async (req, res) => {
 
-    const cnpj_cpf_list = req.body.ids;
+    const cnpj_cpf_list = req.body.selectedIds;
 
     try {
         const deleteResultPhysicals = await ClientPhysical.deleteMany({ cpf: { $in: cnpj_cpf_list } });
