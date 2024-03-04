@@ -20,7 +20,11 @@ const clientCNPJSchema = new mongoose.Schema({
     telefone1: String,
     telefone2: String,
     email: String,
-    inscricao_estadual: String
+    inscricao_estadual: {
+        type: String,
+        required: true,
+        default: 'ISENTO'
+    }
 })
 
 const ClientCNPJ = mongoose.model('ClientCNPJ', clientCNPJSchema)
