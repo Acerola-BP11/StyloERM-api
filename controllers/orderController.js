@@ -96,7 +96,7 @@ const updateOrder = async (req, res) => {
 }
 
 const cancelOrder = async (req, res) => {
-    const orderId = req.body.ids
+    const orderId = req.body.selectedIds
     const canceled = true
 
     Order.updateMany({orderId: {$in: orderId}}, { canceled })
