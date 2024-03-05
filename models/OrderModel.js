@@ -16,7 +16,6 @@ const itemSchema = new mongoose.Schema({
     color: String,
     pattern: String,
     size: String,
-    patternCode: String,
     finishing: String,
     unitaryPrice: Number,
     totalPrice: Number
