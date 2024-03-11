@@ -31,6 +31,8 @@ const orderSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         required: true
     },
+    paymentMethod: String,
+    note: String,
     city: String,
     adress: String,
     itens: [itemSchema],

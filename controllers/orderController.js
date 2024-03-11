@@ -1,9 +1,9 @@
 const Order = require("../models/OrderModel")
 
 const newOrder = async (req, res) => {
-    const { client, city, adress, itens, budget } = req.body
+    const { client, city, adress, itens, budget, note, paymentMethod } = req.body
     try {
-        await Order.create({ client, city, adress, itens, budget, delivered: false, canceled: false })
+        await Order.create({ client, city, adress, itens, budget, delivered: false, canceled: false, note, paymentMethod })
         res.status(200).send('Pedido criado com sucesso!')
     } catch (e) {
         console.error(e)
@@ -83,9 +83,9 @@ const getClientHistory = async (req, res) => {
 
 const updateOrder = async (req, res) => {
     const orderId = req.params.orderId
-    const { city, adress, itens, budget, step } = req.body
+    const { city, adress, itens, budget, step, note, paymentMethod } = req.body
 
-    await Order.findByIdAndUpdate({orderId}, { city, adress, itens, budget, step })
+    await Order.findByIdAndUpdate({orderId}, { city, adress, itens, budget, step, note, paymentMethod })
         .catch(e => {
             console.error(e)
             res.status(500).send('Erro ao atualizar Pedido')
