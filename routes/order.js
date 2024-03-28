@@ -3,7 +3,7 @@ const { getOrders, getOrder, getClientHistory, newOrder, updateOrder, cancelOrde
 var router = express.Router();
 
 router.get('/', getOrders)
-router.get('/pdf', getOrderPDF)
+router.get('/pdf/:orderId', getOrderPDF)
 router.get('/:orderId', getOrder)
 router.get('/history/:clientId', getClientHistory)
 router.post('/', newOrder)

@@ -113,10 +113,12 @@ const cancelOrder = async (req, res) => {
 
 const getOrderPDF = async (req, res) => {
 
+    const orderId = req.params.orderId
+
     const order = (await Order.aggregate([
         {
             $match: {
-                orderId: 12
+                orderId: orderId
             }
         },
         {
@@ -215,9 +217,6 @@ const getOrderPDF = async (req, res) => {
             { label: 'Preço Unitário', width: 60, align: 'center', property: 'unitaryPrice', renderer: (value) => toReal(value) },
             { label: 'Preço Total', width: 60, align: 'center', property: 'totalPrice', renderer: (value) => toReal(value) }
         ],
-        // rows: [
-        //     ['guardanapos', 120, 'Jacar', 72, 7989, '0,50x0,50', 'barra mitrada', toReal(22000), toReal(900000)]
-        // ]
         datas: rows,
         options: options
     }
