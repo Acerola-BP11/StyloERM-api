@@ -248,7 +248,7 @@ const getOrderPDF = async (req, res) => {
     doc
         .moveDown(2)
         .fontSize(15)
-        .text(`Cliente: ${order.clientInfo[0].razao || order.clientInfo[0].nome}`, 20)
+        .text(`Cliente: ${order.clientInfo[0]?.razao || order.clientInfo[0]?.nome}`, 20)
         .text(`Endereço: ${order.adress}, ${order.city}`)
         .text(`Forma de pagamento: ${order.paymentMethod}`)
         .moveDown(2)
