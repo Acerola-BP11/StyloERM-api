@@ -43,6 +43,7 @@ const getOrders = async (_, res) => {
                     Date: 1,
                     delivered: 1,
                     canceled: 1,
+                    uf: 1,
                     clientInfo: {
                         $concatArrays: ["$clientInfoClientsCnpjs", "$clientInfoClientPhysicals"]
                     }
@@ -114,11 +115,12 @@ const cancelOrder = async (req, res) => {
 const getOrderPDF = async (req, res) => {
 
     const orderId = req.params.orderId
+    console.log(orderId)
 
     const order = (await Order.aggregate([
         {
             $match: {
-                orderId: orderId
+                orderId: Number(orderId)
             }
         },
         {
@@ -143,7 +145,22 @@ const getOrderPDF = async (req, res) => {
                 orderId: 1,
                 city: 1,
                 adress: 1,
-                itens: 1,
+                itens: {
+                    $map: {
+                        input: "$itens",
+                        as: "item",
+                        in: {
+                            $mergeObjects: [
+                                "$$item",
+                                {
+                                    unitaryPrice: { $ifNull: ["$$item.unitaryPrice", 0]},
+                                    totalPrice: { $ifNull: ["$$item.totalPrice", 0]},
+                                    quantity: { $ifNull: ["$$item.quantity", 0]}
+                                }
+                            ]
+                        }
+                    }
+                },
                 budget: 1,
                 Date: 1,
                 paymentMethod: 1,
@@ -153,6 +170,7 @@ const getOrderPDF = async (req, res) => {
             }
         }
     ]))[0];
+    
     const orderTotal = order.itens.reduce((valorAnt, valorAtu) => {
         return valorAnt + valorAtu.totalPrice
     }, 0)
@@ -175,6 +193,10 @@ const getOrderPDF = async (req, res) => {
             .image('./utils/logo-no-background.png', 20, 0, { width: 130 })
             .fontSize(25)
             .text('Stylo Vest Eventos', 225, 50, { align: 'center' })
+            .fontSize(10)
+            .text('09.658.291/0001-84', {
+                align: 'center'
+            })
             .moveDown()
             .fontSize(15)
             .text(`Pedido número ${order.orderId}`, { align: 'center' })
@@ -214,8 +236,8 @@ const getOrderPDF = async (req, res) => {
             { label: 'Desenho', width: 50, align: 'center', property: 'pattern' },
             { label: 'Tamanho', width: 60, align: 'center', property: 'size' },
             { label: 'Acabamento', width: 90, align: 'center', property: 'finishing' },
-            { label: 'Preço Unitário', width: 60, align: 'center', property: 'unitaryPrice', renderer: (value) => toReal(value) },
-            { label: 'Preço Total', width: 60, align: 'center', property: 'totalPrice', renderer: (value) => toReal(value) }
+            { label: 'Preço Unitário', width: 60, align: 'center', property: 'unitaryPrice', renderer: (value) => toReal(value) || 0 },
+            { label: 'Preço Total', width: 60, align: 'center', property: 'totalPrice', renderer: (value) => toReal(value) || 0 }
         ],
         datas: rows,
         options: options
@@ -226,8 +248,8 @@ const getOrderPDF = async (req, res) => {
     doc
         .moveDown(2)
         .fontSize(15)
-        .text(`Cliente: ${order.clientInfo[0].razao}`, 20)
-        .text(`Pedido: ${order.orderId}`)
+        .text(`Cliente: ${order.clientInfo[0].razao || order.clientInfo[0].nome}`, 20)
+        .text(`Endereço: ${order.adress}, ${order.city}`)
         .text(`Forma de pagamento: ${order.paymentMethod}`)
         .moveDown(2)
     doc
