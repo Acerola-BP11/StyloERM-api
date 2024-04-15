@@ -1,6 +1,7 @@
 const PDFDocument = require('pdfkit-table');
 const Order = require("../models/OrderModel");
 const { toReal } = require('../utils/utils');
+const { startCase } = require('lodash');
 
 const newOrder = async (req, res) => {
     const { client, city, adress, itens, budget, note, paymentMethod } = req.body
@@ -171,17 +172,29 @@ const getOrderPDF = async (req, res) => {
         }
     ]))[0];
     
+    if(!order){
+        res.status(404).send('Pedido não encontrado')
+        return
+    }
+
+    console.log(order)
+
     const orderTotal = order.itens.reduce((valorAnt, valorAtu) => {
         return valorAnt + valorAtu.totalPrice
     }, 0)
-
-    console.log(order)
 
     const doc = new PDFDocument({
         size: 'A4'
     })
 
-    const rows = order.itens
+    const rows = order.itens.map(item => {
+        item.name = startCase(item.name)
+        item.material = startCase(item.material)
+        item.color = startCase(item.color)
+        item.pattern = startCase(item.pattern)
+        item.finishing = startCase(item.finishing)
+        return item
+    })
 
     const header = () => {
         doc
@@ -199,15 +212,17 @@ const getOrderPDF = async (req, res) => {
             })
             .moveDown()
             .fontSize(15)
-            .text(`Pedido número ${order.orderId}`, { align: 'center' })
+            .text(`${order.budget? 'Orçamento' : 'Pedido'} número ${order.orderId}`, { align: 'center' })
             .lineCap('square')
             .strokeColor('black')
             .rect(10, 140, 575, 690)
             .stroke()
             .fontSize(10)
-            .text(`Rodrigo Gaioto Struchel - (14) 98141-1012`, 390, 145, {
+            .font('Helvetica-Bold')
+            .text(`Rodrigo Gaioto Struchel - (14) 98141-1012`, 380, 145, {
                 lineBreak: false
             })
+            .font('Helvetica')
 
     }
 
@@ -224,7 +239,8 @@ const getOrderPDF = async (req, res) => {
         prepareRow: () => doc.font('Helvetica').fontSize(8),
         divider: {
             horizontal: { disabled: false, width: 0.5, opacity: 0.5 }
-        }
+        },
+        x: 17.75
     }
 
     const table = {
@@ -232,7 +248,7 @@ const getOrderPDF = async (req, res) => {
             { label: 'Produto', width: 90, align: 'center', property: 'name' },
             { label: 'Quantidade', width: 60, align: 'center', property: 'quantity' },
             { label: 'Tecido', width: 50, align: 'center', property: 'material' },
-            { label: 'Cor', width: 30, align: 'center', property: 'color' },
+            { label: 'Cor', width: 40, align: 'center', property: 'color' },
             { label: 'Desenho', width: 50, align: 'center', property: 'pattern' },
             { label: 'Tamanho', width: 60, align: 'center', property: 'size' },
             { label: 'Acabamento', width: 90, align: 'center', property: 'finishing' },
@@ -246,11 +262,33 @@ const getOrderPDF = async (req, res) => {
     doc.pipe(res)
     header()
     doc
-        .moveDown(2)
         .fontSize(15)
-        .text(`Cliente: ${order.clientInfo[0]?.razao || order.clientInfo[0]?.nome}`, 20)
-        .text(`Endereço: ${order.adress}, ${order.city}`)
-        .text(`Forma de pagamento: ${order.paymentMethod}`)
+        .text(`Cliente:`, 20, 160, {
+            continued: true
+        })
+        .font('Helvetica-Bold')
+        .text(` ${order.clientInfo[0]?.razao || order.clientInfo[0]?.nome}`)
+        .font('Helvetica')
+        .text('Data:', {
+            continued: true
+        })
+        .font('Helvetica-Bold')
+        .text(` ${order.Date.toLocaleString('pt-br', {
+            dateStyle: 'short'
+        })}`)
+        .font('Helvetica')
+        .text(`Endereço:`, {
+            continued: true
+        })
+        .font('Helvetica-Bold')
+        .text(` ${order.adress}, ${order.city}`)
+        .font('Helvetica')
+        .text(`Forma de pagamento:`, {
+            continued: true
+        })
+        .font('Helvetica-Bold')
+        .text(` ${startCase(order.paymentMethod)}`)
+        .font('Helvetica')
         .moveDown(2)
     doc
         .table(table)
