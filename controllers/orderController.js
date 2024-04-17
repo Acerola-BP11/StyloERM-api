@@ -311,7 +311,6 @@ const getOrderPDFSupplier = async (req, res) => {
         return
     }
 
-    res.setHeader('title', `Pedido${orderId}`)
     res.setHeader('Content-type', 'file/pdf');
     res.setHeader('Content-disposition', `attachment; filename=Pedido${orderId}.pdf`);
     console.log(order)
