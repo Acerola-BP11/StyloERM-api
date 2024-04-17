@@ -176,9 +176,12 @@ const getOrderPDF = async (req, res) => {
         res.status(404).send('Pedido não encontrado')
         return
     }
-    const type = order.budget? 'Orçamento' : 'Pedido'
     res.setHeader('Content-type', 'file/pdf');
-    res.setHeader('Content-disposition', `attachment; filename=${type + orderId}.pdf`);
+    if(order.budget){
+        res.setHeader('Content-disposition', `attachment; filename=Orçamento${orderId}.pdf`);
+    }else{
+        res.setHeader('Content-disposition', `attachment; filename=Pedido${orderId}.pdf`);
+    }
 
     console.log(order)
 
