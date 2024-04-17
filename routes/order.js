@@ -2,6 +2,7 @@ var express = require('express');
 const { getOrders, getOrder, getClientHistory, newOrder, updateOrder, cancelOrder, getOrderPDF, getOrderPDFSupplier } = require('../controllers/orderController');
 var router = express.Router();
 
+// router.all('*', sessionMiddleware)
 router.get('/', getOrders)
 router.get('/pdf/:orderId', getOrderPDF)
 router.get('/pdf/:orderId/supplier', getOrderPDFSupplier)

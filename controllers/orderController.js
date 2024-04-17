@@ -116,7 +116,6 @@ const cancelOrder = async (req, res) => {
 const getOrderPDF = async (req, res) => {
 
     const orderId = req.params.orderId
-    console.log(orderId)
 
     const order = (await Order.aggregate([
         {
@@ -178,12 +177,14 @@ const getOrderPDF = async (req, res) => {
     }
     res.setHeader('Content-type', 'file/pdf');
     if(order.budget){
-        res.setHeader('Content-disposition', `attachment; filename=Orçamento${orderId}.pdf`);
+        const disposition = `attachment; filename=Orçamento${orderId}.pdf`
+        res.setHeader('Content-disposition', disposition);
     }else{
-        res.setHeader('Content-disposition', `attachment; filename=Pedido${orderId}.pdf`);
+        const disposition = `attachment; filename=Pedido${orderId}.pdf`
+        res.setHeader('Content-disposition', disposition);
     }
 
-    console.log(order)
+    console.log(disposition)
 
     const orderTotal = order.itens.reduce((valorAnt, valorAtu) => {
         return valorAnt + valorAtu.totalPrice
