@@ -184,8 +184,6 @@ const getOrderPDF = async (req, res) => {
         res.setHeader('Content-disposition', disposition);
     }
 
-    console.log(disposition)
-
     const orderTotal = order.itens.reduce((valorAnt, valorAtu) => {
         return valorAnt + valorAtu.totalPrice
     }, 0)
