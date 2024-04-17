@@ -154,9 +154,9 @@ const getOrderPDF = async (req, res) => {
                             $mergeObjects: [
                                 "$$item",
                                 {
-                                    unitaryPrice: { $ifNull: ["$$item.unitaryPrice", 0]},
-                                    totalPrice: { $ifNull: ["$$item.totalPrice", 0]},
-                                    quantity: { $ifNull: ["$$item.quantity", 0]}
+                                    unitaryPrice: { $ifNull: ["$$item.unitaryPrice", 0] },
+                                    totalPrice: { $ifNull: ["$$item.totalPrice", 0] },
+                                    quantity: { $ifNull: ["$$item.quantity", 0] }
                                 }
                             ]
                         }
@@ -171,8 +171,8 @@ const getOrderPDF = async (req, res) => {
             }
         }
     ]))[0];
-    
-    if(!order){
+
+    if (!order) {
         res.status(404).send('Pedido não encontrado')
         return
     }
@@ -212,7 +212,7 @@ const getOrderPDF = async (req, res) => {
             })
             .moveDown()
             .fontSize(15)
-            .text(`${order.budget? 'Orçamento' : 'Pedido'} número ${order.orderId}`, { align: 'center' })
+            .text(`${order.budget ? 'Orçamento' : 'Pedido'} número ${order.orderId}`, { align: 'center' })
             .lineCap('square')
             .strokeColor('black')
             .rect(10, 140, 575, 690)
@@ -292,7 +292,7 @@ const getOrderPDF = async (req, res) => {
         .moveDown(2)
     doc
         .table(table)
-    doc    
+    doc
         .fontSize(10)
         .font('Helvetica-Bold')
         .text(`Total do Pedido: ${toReal(orderTotal)}`, 380)
@@ -300,6 +300,115 @@ const getOrderPDF = async (req, res) => {
 
 }
 
+const getOrderPDFSupplier = async (req, res) => {
+
+    const orderId = req.params.orderId
+
+    const order = await Order.findOne({orderId})
+
+    if (!order) {
+        res.status(404).send('Pedido não encontrado')
+        return
+    }
+
+    res.setHeader('title', `Pedido${orderId}`)
+    res.setHeader('Content-type', 'file/pdf');
+    res.setHeader('Content-disposition', `attachment; filename=Pedido${orderId}.pdf`);
+    console.log(order)
+
+    const doc = new PDFDocument({
+        size: 'A4'
+    })
+
+    const rows = order.itens.map(item => {
+        item.name = startCase(item.name)
+        item.material = startCase(item.material)
+        item.color = startCase(item.color)
+        item.pattern = startCase(item.pattern)
+        item.finishing = startCase(item.finishing)
+        return item
+    })
+
+    const header = () => {
+        doc
+            .lineCap('square')
+            .lineWidth(2)
+            .strokeColor('black')
+            .rect(10, 10, 575, 130)
+            .stroke()
+            .image('./utils/logo-no-background.png', 20, 0, { width: 130 })
+            .fontSize(25)
+            .text('Stylo Vest Eventos', 225, 50, { align: 'center' })
+            .fontSize(10)
+            .text('09.658.291/0001-84', {
+                align: 'center'
+            })
+            .moveDown()
+            .fontSize(15)
+            .text(`Pedido número ${order.orderId}`, { align: 'center' })
+            .lineCap('square')
+            .strokeColor('black')
+            .rect(10, 140, 575, 690)
+            .stroke()
+            .fontSize(10)
+            .font('Helvetica-Bold')
+            .text(`Rodrigo Gaioto Struchel - (14) 98141-1012`, 380, 145, {
+                lineBreak: false
+            })
+            .font('Helvetica')
+
+    }
+
+    const options = {
+        prepareHeader: () => {
+            doc.lineCap('square')
+                .lineWidth(2)
+                .strokeColor('black')
+                .fontSize(10)
+                .font("Helvetica-Bold")
+                .rect(10, 10, 575, 820)
+                .stroke()
+        },
+        prepareRow: () => doc.font('Helvetica').fontSize(8),
+        divider: {
+            horizontal: { disabled: false, width: 0.5, opacity: 0.5 }
+        },
+        x: 17.75
+    }
+
+    const table = {
+        headers: [
+            { label: 'Produto', width: 80, align: 'center', property: 'name' },
+            { label: 'Quantidade', width: 80, align: 'center', property: 'quantity' },
+            { label: 'Tecido', width: 80, align: 'center', property: 'material' },
+            { label: 'Cor', width: 80, align: 'center', property: 'color' },
+            { label: 'Desenho', width: 80, align: 'center', property: 'pattern' },
+            { label: 'Tamanho', width: 80, align: 'center', property: 'size' },
+            { label: 'Acabamento', width: 80, align: 'center', property: 'finishing' }
+        ],
+        datas: rows,
+        options: options
+    }
+
+    doc.pipe(res)
+    header()
+    doc
+        .fontSize(15)
+        .font('Helvetica')
+        .text('Data:', 20, 160, {
+            continued: true
+        })
+        .font('Helvetica-Bold')
+        .text(` ${order.Date.toLocaleString('pt-br', {
+            dateStyle: 'short'
+        })}`)
+        .font('Helvetica')
+        .moveDown(2)
+    doc
+        .table(table)
+    doc.end()
+}
+
 module.exports = {
-    newOrder, getOrders, getOrder, getClientHistory, updateOrder, cancelOrder, getOrderPDF
+    newOrder, getOrders, getOrder, getClientHistory, updateOrder, cancelOrder, getOrderPDF, getOrderPDFSupplier
 }
