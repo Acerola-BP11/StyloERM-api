@@ -177,6 +177,9 @@ const getOrderPDF = async (req, res) => {
         return
     }
 
+    res.setHeader('Content-type', 'file/pdf');
+    res.setHeader('Content-disposition', `attachment; filename=${order.budget? 'Orçamento' : 'Pedido'}${orderId}.pdf`);
+
     console.log(order)
 
     const orderTotal = order.itens.reduce((valorAnt, valorAtu) => {
