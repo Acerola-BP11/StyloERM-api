@@ -177,7 +177,7 @@ const getOrderPDF = async (req, res) => {
     }
     res.setHeader('Content-type', 'file/pdf');
     if(order.budget){
-        const disposition = `attachment; filename=Orçamento${orderId}.pdf`
+        const disposition = `attachment; filename=Orcamento${orderId}.pdf`
         res.setHeader('Content-disposition', disposition);
     }else{
         const disposition = `attachment; filename=Pedido${orderId}.pdf`
