@@ -1,14 +1,6 @@
 const mongoose = require('mongoose')
 const Counter = require('./CounterCollection')
 
-const stepSchema = new mongoose.Schema({
-    step: String,
-    Date: {
-        type: Date,
-        default: new Date()
-    }
-})
-
 const itemSchema = new mongoose.Schema({
     name: String,
     quantity: Number,
@@ -37,7 +29,6 @@ const orderSchema = new mongoose.Schema({
     adress: String,
     itens: [itemSchema],
     budget: Boolean,
-    step: stepSchema,
     Date: {
         type: Date,
         default: new Date()
@@ -46,10 +37,12 @@ const orderSchema = new mongoose.Schema({
     canceled: Boolean
 })
 
-orderSchema.pre('save', async function() {
-    const orderId = await Counter.getNextValue()
-    console.log(orderId)
-    this.set({ orderId })
+orderSchema.pre('save', async function () {
+    if (this.isNew) {
+        const orderId = await Counter.getNextValue()
+        console.log(orderId)
+        this.set({ orderId })
+    }
     return
 })
 

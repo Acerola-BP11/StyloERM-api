@@ -87,9 +87,9 @@ const getClientHistory = async (req, res) => {
 
 const updateOrder = async (req, res) => {
     const orderId = req.params.orderId
-    const { city, adress, itens, budget, step, note, paymentMethod } = req.body
+    const { city, adress, itens, budget, note, paymentMethod } = req.body
 
-    await Order.findByIdAndUpdate({ orderId }, { city, adress, itens, budget, step, note, paymentMethod })
+    await Order.findOneAndUpdate({ orderId }, { city, adress, itens, budget, note, paymentMethod })
         .catch(e => {
             console.error(e)
             res.status(500).send('Erro ao atualizar Pedido')
