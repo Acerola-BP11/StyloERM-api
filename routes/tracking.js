@@ -3,7 +3,7 @@ const { getTrackingStatus, newTrackingStep } = require('../controllers/trackingC
 var router = express.Router();
 
 // router.all('*', sessionMiddleware)
-router.get('/', getTrackingStatus)
+router.get('/:orderId', getTrackingStatus)
 router.post('/newStep/:orderId', newTrackingStep)
 
 module.exports = router
