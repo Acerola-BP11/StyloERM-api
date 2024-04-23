@@ -5,7 +5,7 @@ const getTrackingStatus = async (req, res) => {
     const orderId = req.params.orderId
 
     const trackingStatus = await Order.find({orderId}, {
-        step: 1
+        steps: 1
     })
 
     res.send(trackingStatus)
