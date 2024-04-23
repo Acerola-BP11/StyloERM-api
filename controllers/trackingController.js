@@ -4,9 +4,7 @@ const Tracking = require('../models/TrackingModel')
 const getTrackingStatus = async (req, res) => {
     const orderId = req.params.orderId
 
-    const trackingStatus = await Order.find({orderId}, {
-        steps: 1
-    })
+    const trackingStatus = await Order.find({orderId})
 
     res.send(trackingStatus)
 }
