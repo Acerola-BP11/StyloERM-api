@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Counter = require('./CounterCollection')
+const Tracking = require('./TrackingModel')
 
 const itemSchema = new mongoose.Schema({
     name: String,
@@ -42,6 +43,14 @@ orderSchema.pre('save', async function () {
         const orderId = await Counter.getNextValue()
         console.log(orderId)
         this.set({ orderId })
+        const firstStep = {
+            step: 'Pedido recebido'
+        }
+        await Tracking.create({
+            clientId: this.client,
+            orderId: this.orderId,
+            steps: [firstStep]
+        })
     }
     return
 })

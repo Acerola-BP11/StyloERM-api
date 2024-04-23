@@ -9,6 +9,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var clientsRouter = require('./routes/client')
 var orderRouter = require('./routes/order')
+var trackingRouter = require('./routes/tracking')
 
 var app = express();
 
@@ -25,6 +26,7 @@ app.use('/', indexRouter);
 app.use('/user', usersRouter);
 app.use('/clients', clientsRouter)
 app.use('/orders', orderRouter)
+app.use('/tracking', trackingRouter)
 
 const port = process.env.PORT || '8080'
 
